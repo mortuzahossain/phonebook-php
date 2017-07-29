@@ -10,7 +10,7 @@
 	<div class="container text-center">
 		<div class="row">
 			<div class="header col-md-12">
-				<a href="index.html"><h1>Online Phone Book</h1></a>
+				<a href="index.php"><h1>Online Phone Book</h1></a>
 			</div>
 		</div>
 	</div>
@@ -43,17 +43,51 @@
 				</div>
 				<div class="sigle-input col-md-12">
 					<label class="col-md-3">Image: </label>
-					<input type="file" name="file" class="col-md-8">
+					<input type="file" name="image" class="col-md-8">
 				</div>
 				<div class="sigle-input col-md-12 text-center submit-data">
 					<input class="col-md-2" type="submit" name="submit" value="Save">
-					<input class="col-md-2" type="reset" name="submit" value="Reset">
+					<input class="col-md-2" type="reset" value="Reset">
 				</div>
 			</form>
 		</div>
 	</div>
 	
-	<p class='text-center bg-danger'>Error</p>
+<?php
+require_once('inc/db_connect.php');
+
+if (isset($_POST['submit'])) {
+	$name  = $_POST['name'];
+	$phone  = $_POST['phone'];
+	$email  = $_POST['email'];
+	$address  = $_POST['address'];
+	$uploadDir = '/phonebook/img/uploaded/';
+
+	$add_contact_query = "INSERT INTO contacts (name,phone,email,address,imagename) VALUES ('$name','$phone','$email','$address','')";
+
+	if (!empty($_FILES['image']['name'])) {
+		$tempFile   = $_FILES['image']['tmp_name'];
+    	$file_extention = explode('.', $_FILES['image']['name']);
+    	$file_name_new = uniqid('',true). '.' .end($file_extention);
+    	$uploadDir  = $_SERVER['DOCUMENT_ROOT'] . $uploadDir;
+    	$targetFile = $uploadDir . $file_name_new;
+    	move_uploaded_file($tempFile, $targetFile);
+    	$add_contact_query = "INSERT INTO contacts (name,phone,email,address,imagename) VALUES ('$name','$phone','$email','$address','$file_name_new')";
+	}
+
+	if (!empty($name) || !empty($phone)) {
+		if (mysqli_query($con,$add_contact_query)) {
+			header('Location: index.php');
+		} else {
+			echo "<p class='text-center bg-danger'>Error</p>";
+		}
+	}
+
+}
+
+?>
+
+	
 
 	<!-- Footer Part -->
 	<div class="container text-center "> <!--  fixed-bottom -->

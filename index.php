@@ -10,7 +10,7 @@
 	<div class="container text-center">
 		<div class="row">
 			<div class="header col-md-12">
-				<a href="index.html"><h1>Online Phone Book</h1></a>
+				<a href="index.php"><h1>Online Phone Book</h1></a>
 			</div>
 		</div>
 	</div>
@@ -19,10 +19,35 @@
 	<div class="container text-center">
 		<div class="row">
 			<div class="input_area col-md-12">
-				<button type="submit" name="add_button">Add New</button>
+				<form method="post" action="">
+					<button type="submit" name="add_button">Add New</button>
+				</form>
 			</div>
 		</div>
 	</div>
+
+<?php
+
+require_once('inc/db_connect.php');
+
+$show_query = "SELECT * FROM contacts";
+
+$result = mysqli_query($con,$show_query);
+
+while ($row = mysqli_fetch_assoc($result)) {
+	$contacts[] = $row;
+}
+
+$serial_no = 0;
+
+
+if (isset($_POST['add_button'])) {
+	header('Location: addnew.php');
+}
+
+?>
+
+
 	<!-- Show Data -->
 	<div class="container text-center">
 		<div class="row">
@@ -34,26 +59,14 @@
 						<td>Phone</td>
 						<td>Action</td>
 					</tr>
-
+<?php foreach ($contacts as $contact) { $serial_no++; ?>
 					<tr>
-						<td>01</td>
-						<td>Md Mortuza Hossain</td>
-						<td><a href="tel:01719200957">01719200957</a></td>
-						<td><a class="btn btn-success" href="showdetails.html">Show Details</a></td>
+						<td><?php echo $serial_no; ?></td>
+						<td><?php echo $contact['name']; ?></td>
+						<td><a href="tel:<?php echo $contact['phone']; ?>"><?php echo $contact['phone']; ?></a></td>
+						<td><a class="btn btn-success" href="showdetails.php?id=<?php echo $contact['id']; ?>">Show Details</a></td>
 					</tr>
-					<tr>
-						<td>02</td>
-						<td>Md Mortuza Hossain</td>
-						<td><a href="tel:01719200957">01719200957</a></td>
-						<td><a class="btn btn-success" href="showdetails.html">Show Details</a></td>
-					</tr>
-					<tr>
-						<td>03</td>
-						<td>Md Mortuza Hossain</td>
-						<td><a href="tel:01719200957">01719200957</a></td>
-						<td><a class="btn btn-success" href="showdetails.html">Show Details</a></td>
-					</tr>
-				
+<?php } ?>			
 				</table>
 			</div>
 		</div>
